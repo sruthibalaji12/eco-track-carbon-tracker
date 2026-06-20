@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTrack - Monitor & Reduce Your Carbon Footprint</title>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Desktop Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <h1 class="brand-name">EcoTrack</h1>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item active" data-target="overview">
+                    <a href="#overview">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-target="tracker">
+                    <a href="#tracker">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>Tracker & Logs</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-target="suggestions">
+                    <a href="#suggestions">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <span>Eco-Actions</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-target="garden">
+                    <a href="#garden">
+                        <i class="fa-solid fa-seedling"></i>
+                        <span>Virtual Garden</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="user-profile-widget">
+                <div class="user-avatar" id="avatarLetter">U</div>
+                <div class="user-info">
+                    <span class="user-name" id="profileName">Eco Warrior</span>
+                    <span class="user-level" id="profileLevel">Level 1 Sapling</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav class="mobile-nav">
+            <a href="#overview" class="mobile-nav-item active" data-target="overview">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#tracker" class="mobile-nav-item" data-target="tracker">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Tracker</span>
+            </a>
+            <a href="#suggestions" class="mobile-nav-item" data-target="suggestions">
+                <i class="fa-solid fa-lightbulb"></i>
+                <span>Actions</span>
+            </a>
+            <a href="#garden" class="mobile-nav-item" data-target="garden">
+                <i class="fa-solid fa-seedling"></i>
+                <span>Garden</span>
+            </a>
+        </nav>
+
+        <!-- Main Content Panel -->
+        <main class="main-content">
+            <!-- Header section -->
+            <header>
+                <div class="page-title">
+                    <h2 id="headerTitle">Dashboard</h2>
+                    <span id="headerSubtitle">Track and lower your daily carbon footprint.</span>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="btnOpenLog">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Log Activity</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- VIEW: DASHBOARD (OVERVIEW) -->
+            <section id="overview" class="page-view active">
+                <!-- Stats overview widgets -->
+                <div class="grid-cols-3">
+                    <div class="card">
+                        <div class="stat-box">
+                            <span class="card-subtitle">Daily Carbon Footprint</span>
+                            <span class="stat-value" id="valDailyFootprint">0.0</span>
+                            <span class="stat-unit">kg CO2e logged today</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="stat-box">
+                            <span class="card-subtitle">Eco level & XP</span>
+                            <span class="stat-value" id="valEcoLevel">Lvl 1</span>
+                            <span class="stat-unit" id="valEcoXp">0 / 100 XP to next rank</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="stat-box">
+                            <span class="card-subtitle">Carbon Saved</span>
+                            <span class="stat-value" id="valCarbonSaved">0.0</span>
+                            <span class="stat-unit">kg CO2e saved vs average</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts breakdown panel -->
+                <div class="grid-main">
+                    <!-- History Trend Chart -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Footprint Trend</h3>
+                                <span class="card-subtitle">Last 7 days carbon emissions history</span>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-wrapper">
+                                <canvas id="historyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category breakdown Chart -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Emission Sources</h3>
+                                <span class="card-subtitle">Distribution by category</span>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="height: 180px;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        <div style="margin-top: 1.5rem;" id="customLegend">
+                            <!-- Custom styled legend rendered by app.js -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Focus Section: High Impact recommendations -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Recommended Eco Action</h3>
+                            <span class="card-subtitle">Quick suggestion based on your emissions profile</span>
+                        </div>
+                    </div>
+                    <div id="dashboardRecommendation" class="action-card" style="border: none; background: rgba(255,255,255,0.015); padding: 0;">
+                        <!-- Rendered by app.js -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: TRACKER & LOG HISTORY -->
+            <section id="tracker" class="page-view">
+                <div class="grid-main">
+                    <!-- Log list of logs -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Daily Activity Log</h3>
+                                <span class="card-subtitle">Items logged in the system</span>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" id="btnClearLogs" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                                <i class="fa-solid fa-trash-can"></i> Clear All
+                            </button>
+                        </div>
+                        <div class="history-list" id="historyList">
+                            <!-- Populated by app.js -->
+                        </div>
+                    </div>
+
+                    <!-- Carbon stats benchmarks -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Eco Benchmarks</h3>
+                        </div>
+                        <p class="card-subtitle" style="margin-bottom: 1.5rem;">How your daily footprint compares to global standards.</p>
+                        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                            <div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">
+                                    <span>Eco Goal Limit</span>
+                                    <span>6.0 kg CO2 / day</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: 100%; background: var(--primary);"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">
+                                    <span>European Average</span>
+                                    <span>18.5 kg CO2 / day</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: 100%; background: var(--warning);"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">
+                                    <span>North American Average</span>
+                                    <span>42.0 kg CO2 / day</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: 100%; background: var(--danger);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: ECO-ACTIONS & CHALLENGES -->
+            <section id="suggestions" class="page-view">
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Personalized Suggestions</h3>
+                            <span class="card-subtitle">Emissions reduction guide tailored for you</span>
+                        </div>
+                    </div>
+                    <div class="action-grid" id="suggestionsGrid">
+                        <!-- Populated by app.js -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Daily Green Challenges</h3>
+                            <span class="card-subtitle">Complete daily tasks to gain XP and grow your Eco-Tree</span>
+                        </div>
+                    </div>
+                    <div class="challenge-list" id="challengeList">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: VIRTUAL GARDEN -->
+            <section id="garden" class="page-view">
+                <div class="garden-layout">
+                    <!-- canvas drawing tree -->
+                    <div class="tree-container">
+                        <canvas id="treeCanvas"></canvas>
+                    </div>
+
+                    <!-- tree stats / levels -->
+                    <div class="garden-stats">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Tree Growing Progress</h3>
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.5rem;">
+                                    <span id="gardenLevelName">Sapling</span>
+                                    <span id="gardenXpText">0 / 100 XP</span>
+                                </div>
+                                <div class="progress-bar-container" style="height: 14px;">
+                                    <div class="progress-bar-fill" id="gardenProgressBar"></div>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.75rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fa-solid fa-circle-check" style="color: var(--primary);"></i>
+                                    <span>Log emissions daily to sustain the soil.</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fa-solid fa-circle-check" style="color: var(--primary);"></i>
+                                    <span>Complete Eco-Actions to earn branch XP.</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fa-solid fa-circle-check" style="color: var(--primary);"></i>
+                                    <span>Achieving Level 2 unlocks pink cherry blossoms!</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Carbon Offsetting</h3>
+                            </div>
+                            <div style="text-align: center; padding: 1.5rem 0;">
+                                <div style="font-size: 3.5rem; color: var(--accent); margin-bottom: 0.5rem;">
+                                    <i class="fa-solid fa-tree"></i>
+                                </div>
+                                <h4 style="font-size: 1.25rem; font-weight: 800;" id="treesPlantedVal">0.0 Trees</h4>
+                                <p class="card-subtitle" style="margin-top: 0.5rem;">Equivalent oxygen output generated by your CO2 savings.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ACTIVITY LOGGING MODAL -->
+    <div class="modal-overlay" id="logModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Log Activity</h3>
+                <button class="modal-close" id="btnCloseLogModal">&times;</button>
+            </div>
+            
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="tab-transport">
+                    <i class="fa-solid fa-car"></i> Transport
+                </button>
+                <button class="modal-tab" data-tab="tab-energy">
+                    <i class="fa-solid fa-bolt"></i> Energy
+                </button>
+                <button class="modal-tab" data-tab="tab-food">
+                    <i class="fa-solid fa-utensils"></i> Food
+                </button>
+                <button class="modal-tab" data-tab="tab-waste">
+                    <i class="fa-solid fa-trash"></i> Waste
+                </button>
+            </div>
+
+            <form id="activityForm">
+                <div class="modal-body">
+                    <!-- DATE PICKER (SHARED) -->
+                    <div class="form-group">
+                        <label class="form-label" for="logDate">Date of Activity</label>
+                        <input type="date" id="logDate" class="form-input" required>
+                    </div>
+
+                    <!-- TAB CONTENT: TRANSPORT -->
+                    <div class="tab-content active" id="tab-transport">
+                        <div class="form-group">
+                            <label class="form-label" for="transportMode">Transport Mode</label>
+                            <select id="transportMode" class="form-select">
+                                <option value="petrol_car">Petrol Car</option>
+                                <option value="diesel_car">Diesel Car</option>
+                                <option value="electric_car">Electric Car</option>
+                                <option value="public_transit">Public Transport (Train/Bus)</option>
+                                <option value="active">Active (Walk / Cycle)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="transportDistance">Distance Traveled (km)</label>
+                            <input type="number" id="transportDistance" class="form-input" min="0" placeholder="e.g. 15" value="0">
+                        </div>
+                    </div>
+
+                    <!-- TAB CONTENT: ENERGY -->
+                    <div class="tab-content" id="tab-energy">
+                        <div class="form-group">
+                            <label class="form-label" for="energyElectricity">Electricity Consumption (kWh)</label>
+                            <input type="number" id="energyElectricity" class="form-input" min="0" placeholder="e.g. 8" value="0">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="energyGas">Natural Gas (kWh)</label>
+                                <input type="number" id="energyGas" class="form-input" min="0" placeholder="e.g. 5" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="energyWater">Water Usage (m³ / 1000L)</label>
+                                <input type="number" id="energyWater" class="form-input" min="0" step="0.1" placeholder="e.g. 0.3" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB CONTENT: FOOD -->
+                    <div class="tab-content" id="tab-food">
+                        <div class="form-group">
+                            <label class="form-label" for="foodDiet">Diet Type for Today</label>
+                            <select id="foodDiet" class="form-select">
+                                <option value="balanced">Balanced / Average Diet</option>
+                                <option value="meat_heavy">Meat-heavy Diet</option>
+                                <option value="vegetarian">Vegetarian</option>
+                                <option value="vegan">Vegan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- TAB CONTENT: WASTE -->
+                    <div class="tab-content" id="tab-waste">
+                        <div class="form-group">
+                            <label class="form-label" for="wasteWeight">Total Waste Generated (kg)</label>
+                            <input type="number" id="wasteWeight" class="form-input" min="0" placeholder="e.g. 1.2" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="wasteRecycling">Recycled / Composted Portion (%)</label>
+                            <input type="number" id="wasteRecycling" class="form-input" min="0" max="100" placeholder="e.g. 50" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelLogModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Activity</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script src="js/formulas.js"></script>
+    <script src="js/tree.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
